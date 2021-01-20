@@ -2,6 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const redis = require('redis');
 
+// Set Port
 const PORT = process.env.PORT || 5000;
 const REDIS_PORT = process.env.PORT || 6379;
 
@@ -18,18 +19,13 @@ function setResponse(username, repos) {
 async function getRepos(req, res, next) {
   try {
     console.log('Fetching Data...');
-
     const { username } = req.params;
-
     const response = await fetch(`https://api.github.com/users/${username}`);
-
     const data = await response.json();
-
     const repos = data.public_repos;
 
     // Set data to Redis
     client.setex(username, 2500, repos);
-
     res.send(setResponse(username, repos));
 
   } catch (err) {
@@ -56,5 +52,5 @@ function cache(req, res, next) {
 app.get('/repos/:username', cache, getRepos);
 
 app.listen(5000, () => {
-  console.log(`App listening on port ${PORT}`);
+  console.log(`Magin Happens on port ${PORT}`);
 });
